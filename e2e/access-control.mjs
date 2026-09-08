@@ -62,6 +62,13 @@ async function login(page, id, password) {
   const body = await page.locator('main').innerText();
   const leaked = body.includes('Run the monthly spin') || body.includes('Admin-only control');
   !leaked ? pass('member forcing #spin is redirected away') : fail('member reached the spin console via hash');
+
+  // The address bar must agree with what rendered, so a refresh or a shared
+  // link does not point at a section the viewer cannot open.
+  const corrected = await page.evaluate(() => location.hash);
+  corrected === '#overview'
+    ? pass('the URL is corrected to the section actually shown')
+    : fail(`URL still reads ${corrected} after the redirect`);
   await page.close();
 }
 

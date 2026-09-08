@@ -55,6 +55,19 @@ function Dashboard() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
+  // Keep the address bar honest. An out-of-role or unknown hash renders the
+  // fallback section, and leaving the original in the URL would mean a refresh,
+  // a bookmark or a shared link pointed somewhere the viewer cannot go.
+  useEffect(() => {
+    if (!user) return;
+    const permitted = SECTIONS.filter((section) => section.roles.includes(user.role));
+    const resolved = permitted.some((section) => section.id === hash) ? hash : permitted[0]!.id;
+    if (resolved !== hash) {
+      window.history.replaceState(null, '', `#${resolved}`);
+      setHash(resolved);
+    }
+  }, [user, hash]);
+
   if (!ready) {
     return (
       <div className="flex min-h-screen items-center justify-center">

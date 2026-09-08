@@ -42,7 +42,8 @@ control that can trigger a draw.
 
 Sections declare the roles allowed to see them, and both the navigation and the
 router read that one list. A member who types `#spin` lands on their own first
-section instead.
+section instead, and the address bar is corrected to match, so a refresh or a
+shared link never points at a section the viewer cannot open.
 
 ### Spin & Win (admin only)
 
@@ -152,7 +153,7 @@ it so no value is available only as a colour.
 ```bash
 npm test                            # 123 unit tests
 npm run build && npm run preview &  # serve on :4173
-npm run test:e2e                    # 16 browser checks of the access model
+npm run test:e2e                    # 17 browser checks of the access model
 ```
 
 Set `CHROMIUM_PATH` if you want the end-to-end run to use a browser you
