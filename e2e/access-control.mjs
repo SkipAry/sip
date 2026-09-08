@@ -13,7 +13,10 @@
 
 import { chromium } from 'playwright';
 const base = 'http://127.0.0.1:4173/';
-const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+// Honour a pre-installed browser when one is provided, otherwise let
+// Playwright resolve its own.
+const executablePath = process.env.CHROMIUM_PATH;
+const browser = await chromium.launch(executablePath ? { executablePath } : {});
 const ctx = await browser.newContext({ viewport: { width: 1400, height: 1100 } });
 const results = [];
 const fail = (m) => results.push(`FAIL ${m}`);

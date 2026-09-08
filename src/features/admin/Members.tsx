@@ -71,7 +71,7 @@ export function Members() {
         />
       </div>
 
-      <div className="grid items-start gap-5 lg:grid-cols-[1fr_1.4fr]">
+      <div className="grid items-start gap-5 lg:grid-cols-2">
         <Card>
           <CardHeader title="Add a member" hint="An ID and password are generated automatically." />
           <CardBody>
@@ -114,7 +114,28 @@ export function Members() {
         </Card>
 
         <Card>
-          <CardHeader title="Member accounts" hint="Suspend an account to block sign-in without deleting it." />
+          <CardHeader
+            title="How access works"
+            hint="The same sign-in serves both dashboards; the ID decides which one opens."
+          />
+          <CardBody className="space-y-3 text-[13px] leading-relaxed text-muted">
+            <p>
+              A member signs in with the ID and password issued here and sees only their own savings, income, team and
+              rank. Spin and Win is not in their navigation, and typing its route lands them back on their overview.
+            </p>
+            <p>
+              Passwords are never stored. Each account keeps a random salt and a PBKDF2-SHA-256 derivation at 210,000
+              iterations, so a lost password is re-issued rather than looked up.
+            </p>
+            <p>
+              Suspending an account blocks sign-in immediately without removing its history. Restore it at any time.
+            </p>
+          </CardBody>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader title="Member accounts" hint="Suspend an account to block sign-in without deleting it." />
           <CardBody className="px-0 py-0">
             <div className="max-h-[460px] overflow-y-auto px-3 py-2">
               <DataTable
@@ -165,9 +186,8 @@ export function Members() {
                 ))}
               </DataTable>
             </div>
-          </CardBody>
-        </Card>
-      </div>
+        </CardBody>
+      </Card>
 
       <Notice tone="info" title="Where these accounts live">
         Accounts are held in this browser’s local storage so the access model can be reviewed without a server. Point

@@ -150,10 +150,13 @@ it so no value is available only as a colour.
 ## Testing
 
 ```bash
-npm test                        # 123 unit tests
-npm run build && npm run preview &
-node e2e/access-control.mjs     # 16 browser checks of the access model
+npm test                            # 123 unit tests
+npm run build && npm run preview &  # serve on :4173
+npm run test:e2e                    # 16 browser checks of the access model
 ```
+
+Set `CHROMIUM_PATH` if you want the end-to-end run to use a browser you
+already have rather than Playwright's own.
 
 The unit suite asserts the engine against the document: all 30 benefit-chart
 rows, all ten level rates, every rank threshold, every stated daily cap, the six
