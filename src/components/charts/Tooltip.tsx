@@ -52,9 +52,7 @@ export function TooltipRow({
         ) : null}
         {label}
       </span>
-      <span className={`tnum text-[12px] ${emphasis ? 'font-semibold text-ink' : 'text-ink'}`}>
-        {value}
-      </span>
+      <span className={`tnum text-[12px] ${emphasis ? 'font-semibold text-ink' : 'text-ink'}`}>{value}</span>
     </div>
   );
 }

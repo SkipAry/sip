@@ -1,5 +1,17 @@
-import { useState } from 'react';
-import { Badge, Card, CardBody, CardHeader, DataTable, Meter, Notice, SegmentedControl, Stat, Td } from '@/components/ui';
+import { useState, type ReactNode } from 'react';
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  DataTable,
+  Meter,
+  Money,
+  Notice,
+  SegmentedControl,
+  Stat,
+  Td,
+} from '@/components/ui';
 import { BarList } from '@/components/charts/BarList';
 import { StackedIncomeChart, INCOME_SERIES } from '@/components/charts/StackedIncomeChart';
 import type { Account } from '@/data/generate';
@@ -17,7 +29,7 @@ export function Income({ account }: { account: Account }) {
           <Stat
             key={entry.id}
             label={`${entry.label} reward`}
-            value={money(entry.amount)}
+            value={<Money amount={entry.amount} size="lg" />}
             sub={
               <span className="flex items-center gap-1.5">
                 <span
@@ -25,7 +37,7 @@ export function Income({ account }: { account: Account }) {
                   style={{ background: INCOME_SERIES[index]?.color }}
                   aria-hidden
                 />
-                {bpsLabel(REWARD_BUCKETS[index]!.share)} of the commissionable base
+                {bpsLabel(REWARD_BUCKETS[index]!.share)} of the base
               </span>
             }
           />
@@ -83,57 +95,95 @@ export function Income({ account }: { account: Account }) {
       </Card>
 
       <div className="grid items-start gap-5 lg:grid-cols-2">
+        <div className="space-y-5">
+          <Card>
+            <CardHeader
+              title="Today’s matching run"
+              hint="Matching is capped per day, so a strong day can leave money on the table."
+            />
+            <CardBody>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <Figure label="Pairs formed" value={count(dailyRun.result.pairs)} />
+                <Figure label="Pairs paid" value={count(dailyRun.result.pairsPaid)} />
+                <Figure label="Gross" value={<Money amount={dailyRun.result.gross} size="md" />} />
+                <Figure
+                  label="Flushed"
+                  value={<Money amount={dailyRun.result.flushed} size="md" />}
+                  tone={dailyRun.result.flushed > 0 ? 'critical' : undefined}
+                />
+              </div>
+
+              <div className="mt-5">
+                <div className="flex items-baseline justify-between text-[13px]">
+                  <span className="text-muted">Against the {rank?.label ?? 'unranked'} daily cap</span>
+                  <span className="tnum text-ink">
+                    {money(dailyRun.result.payable)} / {money(dailyRun.result.capApplied)}
+                  </span>
+                </div>
+                <Meter
+                  className="mt-2"
+                  value={
+                    dailyRun.result.capApplied === 0
+                      ? 0
+                      : dailyRun.result.payable / dailyRun.result.capApplied
+                  }
+                  tone={dailyRun.result.flushed > 0 ? 'caution' : 'gold'}
+                  label="Daily cap usage"
+                />
+              </div>
+
+              {dailyRun.result.capIsFallback ? (
+                <Notice tone="caution" title="This cap is inherited, not stated">
+                  The plan document lists daily caps for every rank except this one, so the nearest lower
+                  rank’s cap is applied until a policy decision is made.
+                </Notice>
+              ) : null}
+
+              <p className="mt-4 border-t border-line pt-3 text-[13px] leading-relaxed text-muted">
+                {count(dailyRun.freshLeft)} BV arrived on the left and {count(dailyRun.freshRight)} on the
+                right today, joining {count(dailyRun.carryLeft + dailyRun.carryRight)} BV carried over. Pairs
+                settle at {money(MATCHING.payoutPerPair)} on a {MATCHING.ratio.weak}:{MATCHING.ratio.strong}{' '}
+                or {MATCHING.ratio.strong}:{MATCHING.ratio.weak} ratio, and{' '}
+                {count(dailyRun.result.carryLeft + dailyRun.result.carryRight)} BV carries into tomorrow.
+              </p>
+            </CardBody>
+          </Card>
+          <Card>
+            <CardHeader
+              title="Where every rupee of the base goes"
+              hint={`Each active member makes ${money(COMMISSIONABLE_BASE)} commissionable every month. This is how the plan divides it.`}
+            />
+            <CardBody>
+              <BarList
+                ariaLabel="Share of the commissionable base by reward bucket"
+                items={[
+                  ...REWARD_BUCKETS.map((bucket, index) => ({
+                    label: bucket.label.replace('Suvarna ', ''),
+                    value: bucket.share,
+                    display: bpsLabel(bucket.share),
+                    color: INCOME_SERIES[index]?.color,
+                    note: moneyShort((COMMISSIONABLE_BASE * bucket.share) / 10_000),
+                  })),
+                  {
+                    label: 'Unallocated',
+                    value: 10_000 - REWARD_BUCKETS.reduce((total, bucket) => total + bucket.share, 0),
+                    display: bpsLabel(
+                      10_000 - REWARD_BUCKETS.reduce((total, bucket) => total + bucket.share, 0),
+                    ),
+                    color: 'rgb(var(--s-other))',
+                    note: 'company',
+                  },
+                ]}
+              />
+            </CardBody>
+          </Card>
+        </div>
+
         <Card>
           <CardHeader
-            title="Today’s matching run"
-            hint="Matching is capped per day, so a strong day can leave money on the table."
+            title="Level reward, level by level"
+            hint="Each level opens with one more direct referral."
           />
-          <CardBody>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <Figure label="Pairs formed" value={count(dailyRun.result.pairs)} />
-              <Figure label="Pairs paid" value={count(dailyRun.result.pairsPaid)} />
-              <Figure label="Gross" value={money(dailyRun.result.gross)} />
-              <Figure
-                label="Flushed"
-                value={money(dailyRun.result.flushed)}
-                tone={dailyRun.result.flushed > 0 ? 'critical' : undefined}
-              />
-            </div>
-
-            <div className="mt-5">
-              <div className="flex items-baseline justify-between text-[13px]">
-                <span className="text-muted">Against the {rank?.label ?? 'unranked'} daily cap</span>
-                <span className="tnum text-ink">
-                  {money(dailyRun.result.payable)} / {money(dailyRun.result.capApplied)}
-                </span>
-              </div>
-              <Meter
-                className="mt-2"
-                value={dailyRun.result.capApplied === 0 ? 0 : dailyRun.result.payable / dailyRun.result.capApplied}
-                tone={dailyRun.result.flushed > 0 ? 'caution' : 'gold'}
-                label="Daily cap usage"
-              />
-            </div>
-
-            {dailyRun.result.capIsFallback ? (
-              <Notice tone="caution" title="This cap is inherited, not stated">
-                The plan document lists daily caps for every rank except this one, so the nearest lower rank’s cap is
-                applied until a policy decision is made.
-              </Notice>
-            ) : null}
-
-            <p className="mt-4 border-t border-line pt-3 text-[13px] leading-relaxed text-muted">
-              {count(dailyRun.freshLeft)} BV arrived on the left and {count(dailyRun.freshRight)} on the right today,
-              joining {count(dailyRun.carryLeft + dailyRun.carryRight)} BV carried over. Pairs settle at{' '}
-              {money(MATCHING.payoutPerPair)} on a {MATCHING.ratio.weak}:{MATCHING.ratio.strong} or{' '}
-              {MATCHING.ratio.strong}:{MATCHING.ratio.weak} ratio, and{' '}
-              {count(dailyRun.result.carryLeft + dailyRun.result.carryRight)} BV carries into tomorrow.
-            </p>
-          </CardBody>
-        </Card>
-
-        <Card>
-          <CardHeader title="Level reward, level by level" hint="Each level opens with one more direct referral." />
           <CardBody className="px-0 py-0">
             <div className="px-3 py-2">
               <DataTable
@@ -165,7 +215,8 @@ export function Income({ account }: { account: Account }) {
               </DataTable>
             </div>
             <div className="border-t border-line px-5 py-4 text-[13px] leading-relaxed text-muted">
-              {income.level.unlockedLevels} of 10 levels are open, paying {money(income.level.total)} this month.
+              {income.level.unlockedLevels} of 10 levels are open, paying {money(income.level.total)} this
+              month.
               {income.level.forfeited > 0
                 ? ` A further ${money(income.level.forfeited)} sits behind locked levels.`
                 : ' Nothing is locked.'}
@@ -173,45 +224,15 @@ export function Income({ account }: { account: Account }) {
           </CardBody>
         </Card>
       </div>
-
-      <Card>
-        <CardHeader
-          title="Where every rupee of the base goes"
-          hint={`Each active member makes ${money(COMMISSIONABLE_BASE)} commissionable every month. This is how the plan divides it.`}
-        />
-        <CardBody>
-          <BarList
-            ariaLabel="Share of the commissionable base by reward bucket"
-            items={[
-              ...REWARD_BUCKETS.map((bucket, index) => ({
-                label: bucket.label.replace('Suvarna ', ''),
-                value: bucket.share,
-                display: bpsLabel(bucket.share),
-                color: INCOME_SERIES[index]?.color,
-                note: moneyShort((COMMISSIONABLE_BASE * bucket.share) / 10_000),
-              })),
-              {
-                label: 'Unallocated',
-                value: 10_000 - REWARD_BUCKETS.reduce((total, bucket) => total + bucket.share, 0),
-                display: bpsLabel(10_000 - REWARD_BUCKETS.reduce((total, bucket) => total + bucket.share, 0)),
-                color: 'rgb(var(--s-other))',
-                note: 'company',
-              },
-            ]}
-          />
-        </CardBody>
-      </Card>
     </div>
   );
 }
 
-function Figure({ label, value, tone }: { label: string; value: string; tone?: 'critical' }) {
+function Figure({ label, value, tone }: { label: string; value: ReactNode; tone?: 'critical' }) {
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-wider text-faint">{label}</p>
-      <p className={`tnum mt-1 text-[18px] font-semibold ${tone === 'critical' ? 'text-critical' : 'text-ink'}`}>
-        {value}
-      </p>
+      <p className="eyebrow">{label}</p>
+      <p className={`figure-md mt-1.5 ${tone === 'critical' ? 'text-critical' : 'text-ink'}`}>{value}</p>
     </div>
   );
 }

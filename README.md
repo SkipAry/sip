@@ -12,6 +12,7 @@ npm install
 npm run dev        # http://localhost:5173
 npm test           # 123 unit tests
 npm run build      # typecheck + production bundle
+npm run format     # Prettier
 ```
 
 ## Signing in
@@ -131,6 +132,37 @@ real 890-member sponsor tree and then derives every headline from it with the
 same engine a payout run would use. Change the seed and every total, rank and
 chart moves together. Swap `generateAccount()` for an API call and the UI is
 unchanged.
+
+## Design system
+
+The reference point is a private-bank dashboard, not a SaaS marketing page:
+warm neutral surfaces, one accent, hairline borders, and depth carried by
+layered elevation rather than heavy shadows. Both themes are stepped for their
+own surface — the dark palette is designed, not an inverted light one.
+
+- **Type.** Geist for the interface, Geist Mono for IDs and generated
+  passwords, which are read character by character. Money uses tabular figures
+  throughout, with the rupee mark set a step smaller and lighter than the digits
+  so it does not compete with the number it qualifies.
+- **Hierarchy.** Each screen leads with one figure. On the member overview that
+  is the gold value at maturity, set at 44px beside a summary rail of supporting
+  numbers; everything else is subordinate to it.
+- **Surfaces.** Four levels (canvas, surface, raised, sunken) plus a lit top
+  edge on cards. Shadows carry the surface hue rather than pure black, and a
+  fixed grain overlay keeps the dark palette from reading as flat vector.
+- **Motion.** One decelerating curve. Content cascades in on route change, the
+  headline figure counts up in about 700ms, and every interactive element has
+  hover and pressed feedback. All of it collapses under
+  `prefers-reduced-motion`.
+
+The one Magic UI component used is the number ticker
+(`@magicui/number-ticker`), adapted in `src/components/ui/number-ticker.tsx`:
+the registry version hardcodes `en-US` grouping, renders nothing until its
+spring first fires, ignores reduced motion, and takes about three seconds to
+settle. Each of those is documented at the top of the file. The rest of the
+Magic UI catalogue — globes, sparkles, particles, shimmer buttons — is
+marketing-page decoration and would undercut a financial interface, so none of
+it is here.
 
 ## Charts
 

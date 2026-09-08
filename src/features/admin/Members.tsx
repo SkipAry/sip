@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
-import { Badge, Card, CardBody, CardHeader, DataTable, Notice, Stat, Td } from '@/components/ui';
+import { Badge, Card, CardBody, CardHeader, DataTable, Notice, ScrollPanel, Stat, Td } from '@/components/ui';
+import { Button, TextField } from '@/components/ui';
 import {
   createMember,
   listAccounts,
@@ -60,7 +61,7 @@ export function Members() {
           sub="Able to sign in right now"
         />
         <Stat
-          label="Awaiting first sign-in" 
+          label="Awaiting first sign-in"
           value={count(members.filter((account) => account.lastSignInAt === null).length)}
           sub="Credentials issued but never used"
         />
@@ -76,23 +77,16 @@ export function Members() {
           <CardHeader title="Add a member" hint="An ID and password are generated automatically." />
           <CardBody>
             <form onSubmit={onCreate}>
-              <label className="block">
-                <span className="text-[12px] font-medium uppercase tracking-wider text-faint">Full name</span>
-                <input
-                  className="mt-1.5 w-full rounded-lg border border-line bg-raised px-3 py-2 text-[14px] text-ink placeholder:text-faint"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="Anjali Verma"
-                  required
-                />
-              </label>
-              <button
-                type="submit"
-                disabled={busy}
-                className="mt-4 w-full rounded-lg bg-gold px-4 py-2.5 text-[14px] font-semibold text-canvas transition-opacity disabled:opacity-60"
-              >
+              <TextField
+                label="Full name"
+                value={name}
+                onChange={setName}
+                placeholder="Anjali Verma"
+                required
+              />
+              <Button type="submit" disabled={busy} full className="mt-4">
                 {busy ? 'Generating…' : 'Create member'}
-              </button>
+              </Button>
             </form>
 
             {issued ? (
@@ -105,8 +99,8 @@ export function Members() {
                   <Credential label="Password" value={issued.password} />
                 </dl>
                 <p className="mt-3 text-[12px] leading-relaxed text-muted">
-                  Hand these over now. Only a hash is stored, so this password cannot be shown again — issue a new one
-                  if it is lost.
+                  Hand these over now. Only a hash is stored, so this password cannot be shown again — issue a
+                  new one if it is lost.
                 </p>
               </div>
             ) : null}
@@ -120,15 +114,17 @@ export function Members() {
           />
           <CardBody className="space-y-3 text-[13px] leading-relaxed text-muted">
             <p>
-              A member signs in with the ID and password issued here and sees only their own savings, income, team and
-              rank. Spin and Win is not in their navigation, and typing its route lands them back on their overview.
+              A member signs in with the ID and password issued here and sees only their own savings, income,
+              team and rank. Spin and Win is not in their navigation, and typing its route lands them back on
+              their overview.
             </p>
             <p>
-              Passwords are never stored. Each account keeps a random salt and a PBKDF2-SHA-256 derivation at 210,000
-              iterations, so a lost password is re-issued rather than looked up.
+              Passwords are never stored. Each account keeps a random salt and a PBKDF2-SHA-256 derivation at
+              210,000 iterations, so a lost password is re-issued rather than looked up.
             </p>
             <p>
-              Suspending an account blocks sign-in immediately without removing its history. Restore it at any time.
+              Suspending an account blocks sign-in immediately without removing its history. Restore it at any
+              time.
             </p>
           </CardBody>
         </Card>
@@ -136,62 +132,63 @@ export function Members() {
 
       <Card>
         <CardHeader title="Member accounts" hint="Suspend an account to block sign-in without deleting it." />
-          <CardBody className="px-0 py-0">
-            <div className="max-h-[460px] overflow-y-auto px-3 py-2">
-              <DataTable
-                caption="Provisioned member accounts"
-                columns={[
-                  { key: 'id', label: 'Member ID' },
-                  { key: 'name', label: 'Name' },
-                  { key: 'created', label: 'Created' },
-                  { key: 'signin', label: 'Last sign-in' },
-                  { key: 'status', label: 'Status', align: 'right' },
-                  { key: 'actions', label: 'Actions', align: 'right' },
-                ]}
-              >
-                {members.map((account) => (
-                  <tr key={account.id} className="hover:bg-raised/60">
-                    <Td className="tnum">{account.id}</Td>
-                    <Td>{account.name}</Td>
-                    <Td className="text-muted">{dateLabel(new Date(account.createdAt))}</Td>
-                    <Td className="text-muted">
-                      {account.lastSignInAt ? dateLabel(new Date(account.lastSignInAt)) : 'Never'}
-                    </Td>
-                    <Td align="right">
-                      {account.status === 'active' ? (
-                        <Badge tone="positive">Active</Badge>
-                      ) : (
-                        <Badge tone="critical">Suspended</Badge>
-                      )}
-                    </Td>
-                    <Td align="right">
-                      <span className="flex justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => void onReset(account.id)}
-                          className="rounded-md border border-line px-2 py-1 text-[12px] text-muted hover:text-gold"
-                        >
-                          New password
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onToggleStatus(account)}
-                          className="rounded-md border border-line px-2 py-1 text-[12px] text-muted hover:text-ink"
-                        >
-                          {account.status === 'active' ? 'Suspend' : 'Restore'}
-                        </button>
-                      </span>
-                    </Td>
-                  </tr>
-                ))}
-              </DataTable>
-            </div>
+        <CardBody className="px-0 py-0">
+          <ScrollPanel maxHeight={460} className="px-3 py-2">
+            <DataTable
+              stickyHeader
+              caption="Provisioned member accounts"
+              columns={[
+                { key: 'id', label: 'Member ID' },
+                { key: 'name', label: 'Name' },
+                { key: 'created', label: 'Created' },
+                { key: 'signin', label: 'Last sign-in' },
+                { key: 'status', label: 'Status', align: 'right' },
+                { key: 'actions', label: 'Actions', align: 'right' },
+              ]}
+            >
+              {members.map((account) => (
+                <tr key={account.id} className="hover:bg-raised/60">
+                  <Td className="tnum">{account.id}</Td>
+                  <Td>{account.name}</Td>
+                  <Td className="text-muted">{dateLabel(new Date(account.createdAt))}</Td>
+                  <Td className="text-muted">
+                    {account.lastSignInAt ? dateLabel(new Date(account.lastSignInAt)) : 'Never'}
+                  </Td>
+                  <Td align="right">
+                    {account.status === 'active' ? (
+                      <Badge tone="positive">Active</Badge>
+                    ) : (
+                      <Badge tone="critical">Suspended</Badge>
+                    )}
+                  </Td>
+                  <Td align="right">
+                    <span className="flex justify-end gap-2">
+                      <Button
+                        variant="secondary"
+                        className="px-2 py-1 text-tiny font-medium"
+                        onClick={() => void onReset(account.id)}
+                      >
+                        New password
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        className="px-2 py-1 text-tiny font-medium"
+                        onClick={() => onToggleStatus(account)}
+                      >
+                        {account.status === 'active' ? 'Suspend' : 'Restore'}
+                      </Button>
+                    </span>
+                  </Td>
+                </tr>
+              ))}
+            </DataTable>
+          </ScrollPanel>
         </CardBody>
       </Card>
 
       <Notice tone="info" title="Where these accounts live">
-        Accounts are held in this browser’s local storage so the access model can be reviewed without a server. Point
-        the four functions in the store module at an API and the rest of the app is unchanged.
+        Accounts are held in this browser’s local storage so the access model can be reviewed without a
+        server. Point the four functions in the store module at an API and the rest of the app is unchanged.
       </Notice>
     </div>
   );
@@ -201,14 +198,15 @@ function Credential({ label, value }: { label: string; value: string }) {
   const [copied, setCopied] = useState(false);
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg border border-line bg-surface px-3 py-2">
+    <div className="well flex items-center justify-between gap-3 bg-surface px-3 py-2.5">
       <div className="min-w-0">
-        <dt className="text-[11px] uppercase tracking-wider text-faint">{label}</dt>
-        <dd className="tnum truncate text-[14px] font-semibold text-ink">{value}</dd>
+        <dt className="eyebrow">{label}</dt>
+        {/* Monospace: these are codes to be read character by character. */}
+        <dd className="truncate font-mono text-small font-medium text-ink">{value}</dd>
       </div>
       <button
         type="button"
-        className="shrink-0 rounded-md border border-line px-2 py-1 text-[12px] text-muted"
+        className="shrink-0 rounded-md border border-line px-2 py-1 text-tiny text-muted transition-all duration-200 hover:text-ink active:scale-95"
         onClick={() => {
           void navigator.clipboard?.writeText(value).then(
             () => {

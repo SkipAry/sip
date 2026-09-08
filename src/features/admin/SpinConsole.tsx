@@ -1,5 +1,17 @@
 import { useMemo, useState } from 'react';
-import { Badge, Card, CardBody, CardHeader, DataTable, Notice, Stat, Td } from '@/components/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  DataTable,
+  Money,
+  Notice,
+  ScrollPanel,
+  Stat,
+  Td,
+} from '@/components/ui';
 import { SpinWheel } from './SpinWheel';
 import { benefitForMonth, SAVINGS } from '@/lib/plan';
 import { clearDraws, listDraws, runDraw, type Draw, type DrawCandidate } from '@/lib/auth/store';
@@ -69,22 +81,34 @@ export function SpinConsole({ account, adminId }: { account: Account; adminId: s
   return (
     <div className="space-y-5">
       <Notice tone="gold" title="Admin-only control">
-        Running a draw is restricted to the main admin. Members see published results on their own dashboard and have
-        no way to trigger a spin.
+        Running a draw is restricted to the main admin. Members see published results on their own dashboard
+        and have no way to trigger a spin.
       </Notice>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat
           label="Next draw"
           value={nextMonth === null ? 'Complete' : `Month ${nextMonth}`}
-          tone="gold"
-          sub={nextMonth === null ? 'Every month of the term has been drawn' : `Awards ${money(benefitForMonth(nextMonth))} in gold`}
+          accent
+          sub={
+            nextMonth === null
+              ? 'Every month of the term has been drawn'
+              : `Awards ${money(benefitForMonth(nextMonth))} in gold`
+          }
         />
-        <Stat label="Eligible pool" value={count(candidates.length)} sub="Active members who have not yet won" />
-        <Stat label="Draws published" value={count(draws.length)} sub={`Of ${SAVINGS.termMonths} in the term`} />
+        <Stat
+          label="Eligible pool"
+          value={count(candidates.length)}
+          sub="Active members who have not yet won"
+        />
+        <Stat
+          label="Draws published"
+          value={count(draws.length)}
+          sub={`Of ${SAVINGS.termMonths} in the term`}
+        />
         <Stat
           label="Gold awarded"
-          value={money(draws.reduce((total, draw) => total + draw.benefit, 0))}
+          value={<Money amount={draws.reduce((total, draw) => total + draw.benefit, 0)} size="lg" />}
           sub="Across every published draw"
         />
       </div>
@@ -96,24 +120,20 @@ export function SpinConsole({ account, adminId }: { account: Account; adminId: s
             hint="One winner is drawn from the eligible pool. A month can only be drawn once."
           />
           <CardBody>
-            <SpinWheel
-              candidates={candidates}
-              spinningFor={spinningFor}
-              onSettled={settle}
-            />
+            <SpinWheel candidates={candidates} spinningFor={spinningFor} onSettled={settle} />
 
-            <button
-              type="button"
+            <Button
               onClick={startSpin}
               disabled={spinningFor !== null || nextMonth === null || candidates.length === 0}
-              className="mt-5 w-full rounded-lg bg-gold px-4 py-2.5 text-[14px] font-semibold text-canvas transition-opacity disabled:opacity-50"
+              full
+              className="mt-5"
             >
               {spinningFor !== null
                 ? `Spinning for month ${spinningFor}…`
                 : nextMonth === null
                   ? 'All draws complete'
                   : `Spin for month ${nextMonth}`}
-            </button>
+            </Button>
 
             {error ? (
               <p
@@ -129,11 +149,11 @@ export function SpinConsole({ account, adminId }: { account: Account; adminId: s
                 <p className="text-[12px] font-medium uppercase tracking-wider text-gold">
                   Month {result.month} winner
                 </p>
-                <p className="mt-1 text-[20px] font-semibold text-ink">{result.winnerName}</p>
-                <p className="tnum mt-0.5 text-[13px] text-muted">{result.winnerId}</p>
+                <p className="mt-1.5 text-head font-semibold text-ink">{result.winnerName}</p>
+                <p className="mt-0.5 font-mono text-tiny text-muted">{result.winnerId}</p>
                 <p className="mt-3 text-[13px] leading-relaxed text-muted">
-                  Awarded {money(result.benefit)} in gold, drawn from {count(result.poolSize)} eligible members. Their
-                  remaining instalments stop from next month.
+                  Awarded {money(result.benefit)} in gold, drawn from {count(result.poolSize)} eligible
+                  members. Their remaining instalments stop from next month.
                 </p>
               </div>
             ) : null}
@@ -146,17 +166,17 @@ export function SpinConsole({ account, adminId }: { account: Account; adminId: s
             hint="What every member sees. Results are final once drawn."
             actions={
               draws.length > 0 ? (
-                <button
-                  type="button"
+                <Button
+                  variant="secondary"
+                  className="px-2.5 py-1 text-tiny"
                   onClick={() => {
                     clearDraws();
                     setDraws([]);
                     setResult(null);
                   }}
-                  className="rounded-md border border-line px-2.5 py-1 text-[12px] font-medium text-muted hover:text-critical"
                 >
                   Clear demo results
-                </button>
+                </Button>
               ) : undefined
             }
           />
@@ -166,8 +186,9 @@ export function SpinConsole({ account, adminId }: { account: Account; adminId: s
                 No draw has been run yet. Spin for month 1 to publish the first result.
               </p>
             ) : (
-              <div className="max-h-[420px] overflow-y-auto px-3 py-2">
+              <ScrollPanel maxHeight={420} className="px-3 py-2">
                 <DataTable
+                  stickyHeader
                   caption="Published lucky spin results"
                   columns={[
                     { key: 'month', label: 'Draw' },
@@ -192,7 +213,7 @@ export function SpinConsole({ account, adminId }: { account: Account; adminId: s
                     </tr>
                   ))}
                 </DataTable>
-              </div>
+              </ScrollPanel>
             )}
           </CardBody>
         </Card>

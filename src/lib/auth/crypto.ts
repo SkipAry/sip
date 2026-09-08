@@ -115,9 +115,7 @@ export async function verifyPassword(password: string, record: PasswordRecord): 
 
 async function derive(password: string, salt: Uint8Array, iterations: number): Promise<Uint8Array> {
   const api = subtle();
-  const key = await api.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, [
-    'deriveBits',
-  ]);
+  const key = await api.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
   const bits = await api.deriveBits(
     { name: 'PBKDF2', salt: salt as unknown as BufferSource, iterations, hash: 'SHA-256' },
     key,

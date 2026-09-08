@@ -35,15 +35,23 @@ async function login(page, id, password) {
   const page = await ctx.newPage();
   await page.goto(base, { waitUntil: 'networkidle' });
   const gated = await page.locator('text=Sign in').first().isVisible();
-  gated ? pass('unauthenticated visitors see the sign-in screen') : fail('dashboard rendered without sign-in');
+  gated
+    ? pass('unauthenticated visitors see the sign-in screen')
+    : fail('dashboard rendered without sign-in');
 
   // Wrong password
   await page.fill('input[autocomplete="username"]', 'SS-100244');
   await page.fill('input[type="password"]', 'wrong-password');
   await page.click('button[type="submit"]');
   await page.waitForTimeout(700);
-  const err = await page.locator('[role="alert"]').first().textContent().catch(() => null);
-  err?.includes('does not match') ? pass('wrong password is rejected') : fail(`wrong password not rejected: ${err}`);
+  const err = await page
+    .locator('[role="alert"]')
+    .first()
+    .textContent()
+    .catch(() => null);
+  err?.includes('does not match')
+    ? pass('wrong password is rejected')
+    : fail(`wrong password not rejected: ${err}`);
   await page.close();
 }
 
@@ -61,7 +69,9 @@ async function login(page, id, password) {
   await page.waitForTimeout(600);
   const body = await page.locator('main').innerText();
   const leaked = body.includes('Run the monthly spin') || body.includes('Admin-only control');
-  !leaked ? pass('member forcing #spin is redirected away') : fail('member reached the spin console via hash');
+  !leaked
+    ? pass('member forcing #spin is redirected away')
+    : fail('member reached the spin console via hash');
 
   // The address bar must agree with what rendered, so a refresh or a shared
   // link does not point at a section the viewer cannot open.
@@ -80,7 +90,9 @@ async function login(page, id, password) {
   await login(page, 'ADMIN-001', 'SUVARNA-ADMIN-2026');
   const nav = await page.locator('nav[aria-label="Sections"] button').allTextContents();
   nav.includes('Spin & Win') ? pass('admin sees Spin & Win') : fail(`admin nav wrong: ${nav}`);
-  !nav.includes('Overview') ? pass('admin does not get the member overview') : fail('admin sees member Overview');
+  !nav.includes('Overview')
+    ? pass('admin does not get the member overview')
+    : fail('admin sees member Overview');
 
   await page.goto(`${base}#spin`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(500);
@@ -108,11 +120,15 @@ async function login(page, id, password) {
 
   // The new credentials must actually work
   if (idMatch && pwMatch) {
-    await page.click('button:has-text("Sign out")');
+    // Selected by accessible name: the control is an icon button, and its
+    // label is what a screen reader and a keyboard user actually get.
+    await page.getByRole('button', { name: 'Sign out' }).click();
     await page.waitForTimeout(500);
     await login(page, idMatch[0], pwMatch[0]);
     const signedIn = await page.locator('nav[aria-label="Sections"]').count();
-    signedIn === 1 ? pass('new member can sign in with the generated credentials') : fail('generated credentials do not work');
+    signedIn === 1
+      ? pass('new member can sign in with the generated credentials')
+      : fail('generated credentials do not work');
   }
   errors.length === 0 ? pass('no page errors') : fail(`page errors: ${errors.join('; ')}`);
   await page.close();
@@ -125,7 +141,9 @@ async function login(page, id, password) {
   await page.goto(`${base}#savings`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(600);
   const body = await page.locator('main').innerText();
-  /published/i.test(body) ? pass('member sees the published draw badge') : fail('member does not see published results');
+  /published/i.test(body)
+    ? pass('member sees the published draw badge')
+    : fail('member does not see published results');
   const canSpin = await page.locator('button:has-text("Spin")').count();
   canSpin === 0 ? pass('member has no spin control anywhere') : fail('member has a spin button');
   await page.close();

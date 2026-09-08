@@ -19,13 +19,7 @@ export interface BarListItem {
   note?: string;
 }
 
-export function BarList({
-  items,
-  ariaLabel,
-}: {
-  items: readonly BarListItem[];
-  ariaLabel: string;
-}) {
+export function BarList({ items, ariaLabel }: { items: readonly BarListItem[]; ariaLabel: string }) {
   const max = Math.max(...items.map((item) => item.value), 1);
 
   return (
@@ -34,7 +28,10 @@ export function BarList({
         const share = item.value > 0 ? Math.max((item.value / max) * 100, 1.5) : 0;
 
         return (
-          <li key={item.label} className="grid grid-cols-[minmax(84px,1fr)_minmax(0,2.2fr)_auto] items-center gap-3">
+          <li
+            key={item.label}
+            className="grid grid-cols-[minmax(84px,1fr)_minmax(0,2.2fr)_auto] items-center gap-3"
+          >
             <div className="min-w-0">
               <p className="truncate text-[13px] leading-tight text-ink" title={item.label}>
                 {item.label}

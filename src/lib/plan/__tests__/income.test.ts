@@ -99,7 +99,14 @@ describe('binary pairing', () => {
 
   it('never consumes more than each leg holds and carries the rest', () => {
     const cases: Array<[number, number]> = [
-      [0, 0], [1, 2], [2, 1], [7, 13], [30, 30], [100, 5], [999, 1001], [3, 3],
+      [0, 0],
+      [1, 2],
+      [2, 1],
+      [7, 13],
+      [30, 30],
+      [100, 5],
+      [999, 1001],
+      [3, 3],
     ];
     for (const [left, right] of cases) {
       const result = matchPairs(left, right);
@@ -192,10 +199,20 @@ describe('leadership pool', () => {
 
   it('reproduces every printed monthly reward with one qualifier per rank', () => {
     const pool = leadershipPool(100, {
-      associate: 1, silver: 1, gold: 1, ruby: 1, diamond: 1, crown: 1,
+      associate: 1,
+      silver: 1,
+      gold: 1,
+      ruby: 1,
+      diamond: 1,
+      crown: 1,
     });
     const printed = {
-      associate: 500, silver: 1_000, gold: 1_500, ruby: 2_000, diamond: 2_000, crown: 3_000,
+      associate: 500,
+      silver: 1_000,
+      gold: 1_500,
+      ruby: 2_000,
+      diamond: 2_000,
+      crown: 3_000,
     };
     for (const slice of pool.slices) {
       expect(slice.perQualifier).toBe(rupees(printed[slice.rank]));

@@ -122,19 +122,74 @@ export interface Account {
 }
 
 const FIRST_NAMES = [
-  'Aarav', 'Ananya', 'Rohan', 'Meera', 'Vikram', 'Divya', 'Kabir', 'Nisha', 'Arjun', 'Priya',
-  'Sameer', 'Ishita', 'Rahul', 'Kavya', 'Manish', 'Sneha', 'Yash', 'Pooja', 'Aditya', 'Ritu',
-  'Karan', 'Shreya', 'Nikhil', 'Anjali', 'Devansh', 'Tara', 'Harsh', 'Neha', 'Omkar', 'Lata',
+  'Aarav',
+  'Ananya',
+  'Rohan',
+  'Meera',
+  'Vikram',
+  'Divya',
+  'Kabir',
+  'Nisha',
+  'Arjun',
+  'Priya',
+  'Sameer',
+  'Ishita',
+  'Rahul',
+  'Kavya',
+  'Manish',
+  'Sneha',
+  'Yash',
+  'Pooja',
+  'Aditya',
+  'Ritu',
+  'Karan',
+  'Shreya',
+  'Nikhil',
+  'Anjali',
+  'Devansh',
+  'Tara',
+  'Harsh',
+  'Neha',
+  'Omkar',
+  'Lata',
 ];
 
 const LAST_NAMES = [
-  'Sharma', 'Patel', 'Reddy', 'Iyer', 'Nair', 'Desai', 'Gupta', 'Joshi', 'Mehta', 'Rao',
-  'Kulkarni', 'Bose', 'Chauhan', 'Pillai', 'Shetty', 'Bhat', 'Kapoor', 'Verma', 'Sinha', 'Menon',
+  'Sharma',
+  'Patel',
+  'Reddy',
+  'Iyer',
+  'Nair',
+  'Desai',
+  'Gupta',
+  'Joshi',
+  'Mehta',
+  'Rao',
+  'Kulkarni',
+  'Bose',
+  'Chauhan',
+  'Pillai',
+  'Shetty',
+  'Bhat',
+  'Kapoor',
+  'Verma',
+  'Sinha',
+  'Menon',
 ];
 
 const CITIES = [
-  'Pune', 'Nashik', 'Nagpur', 'Kolhapur', 'Aurangabad', 'Solapur', 'Thane', 'Satara',
-  'Sangli', 'Ahmednagar', 'Jalgaon', 'Latur',
+  'Pune',
+  'Nashik',
+  'Nagpur',
+  'Kolhapur',
+  'Aurangabad',
+  'Solapur',
+  'Thane',
+  'Satara',
+  'Sangli',
+  'Ahmednagar',
+  'Jalgaon',
+  'Latur',
 ];
 
 export interface GenerateOptions {
@@ -160,8 +215,9 @@ export function generateAccount(options: GenerateOptions = {}): Account {
   const activeMembers = team.filter((member) => member.active);
   const activeDirects = directs.filter((member) => member.active);
 
-  const activeByLevel = Array.from({ length: 10 }, (_, index) =>
-    team.filter((member) => member.level === index + 1 && member.active).length,
+  const activeByLevel = Array.from(
+    { length: 10 },
+    (_, index) => team.filter((member) => member.level === index + 1 && member.active).length,
   );
 
   /* ---- binary legs -------------------------------------------------- */
@@ -313,14 +369,9 @@ function buildTeam(random: () => number, rootJoinedAt: Date, today: Date): TeamM
         const joinedAt = addMonths(parent.joinedAt, intBetween(random, 1, 3));
         if (joinedAt > today) continue;
 
-        const monthsMember = Math.max(
-          1,
-          Math.min(SAVINGS.termMonths, monthsBetween(joinedAt, today) + 1),
-        );
+        const monthsMember = Math.max(1, Math.min(SAVINGS.termMonths, monthsBetween(joinedAt, today) + 1));
         const active = random() < activity;
-        const instalmentsPaid = active
-          ? monthsMember
-          : Math.max(1, monthsMember - intBetween(random, 1, 4));
+        const instalmentsPaid = active ? monthsMember : Math.max(1, monthsMember - intBetween(random, 1, 4));
 
         const id = `SS-${(200_000 + team.length * 7 + index).toString()}`;
         const leg: Leg = level === 1 ? (index % 2 === 0 ? 'left' : 'right') : parent.leg;

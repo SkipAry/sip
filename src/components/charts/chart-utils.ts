@@ -58,7 +58,9 @@ export function niceTicks(max: number, target = 4): { ticks: number[]; max: numb
   const rough = max / target;
   const magnitude = 10 ** Math.floor(Math.log10(rough));
   const normalised = rough / magnitude;
-  const step = (normalised >= 5 ? 10 : normalised >= 2.5 ? 5 : normalised >= 2 ? 2.5 : normalised >= 1 ? 2 : 1) * magnitude;
+  const step =
+    (normalised >= 5 ? 10 : normalised >= 2.5 ? 5 : normalised >= 2 ? 2.5 : normalised >= 1 ? 2 : 1) *
+    magnitude;
 
   const top = Math.ceil(max / step) * step;
   const ticks: number[] = [];

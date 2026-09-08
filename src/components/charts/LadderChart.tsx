@@ -86,7 +86,13 @@ export function LadderChart({
         ))}
 
         <path d={areaPath(benefitPoints, MARGIN.top + plotHeight)} fill="url(#benefit-fill)" />
-        <path d={linePath(benefitPoints)} fill="none" stroke={BENEFIT_COLOR} strokeWidth={2} strokeLinecap="round" />
+        <path
+          d={linePath(benefitPoints)}
+          fill="none"
+          stroke={BENEFIT_COLOR}
+          strokeWidth={2}
+          strokeLinecap="round"
+        />
         <path
           d={linePath(depositPoints)}
           fill="none"
@@ -107,11 +113,7 @@ export function LadderChart({
               strokeWidth={1.5}
               strokeDasharray="3 3"
             />
-            <text
-              x={x(markerMonth) + 5}
-              y={MARGIN.top + 10}
-              className="fill-gold text-[10px] font-medium"
-            >
+            <text x={x(markerMonth) + 5} y={MARGIN.top + 10} className="fill-gold text-[10px] font-medium">
               You are here
             </text>
           </g>

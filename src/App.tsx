@@ -12,6 +12,7 @@ import { Members } from '@/features/admin/Members';
 import { LoginScreen } from '@/features/auth/LoginScreen';
 import { AuthProvider, useAuth } from '@/lib/auth/AuthContext';
 import { generateAccount } from '@/data/generate';
+import { SidebarSummary } from '@/features/SidebarSummary';
 import type { Role } from '@/lib/auth/store';
 
 interface Section extends NavItem {
@@ -25,15 +26,82 @@ interface Section extends NavItem {
  * permitted section instead.
  */
 const SECTIONS: readonly Section[] = [
-  { id: 'overview', label: 'Overview', hint: 'Everything at a glance', roles: ['member'], icon: <Icon path="M3 10.5 10 4l7 6.5V16a1 1 0 0 1-1 1h-3v-4H7v4H4a1 1 0 0 1-1-1z" /> },
-  { id: 'savings', label: 'Savings', hint: 'Your 30-month ladder and the monthly spin results', roles: ['member'], icon: <Icon path="M4 6h12v9H4zM4 9h12M7 12h3" /> },
-  { id: 'income', label: 'Income', hint: 'Referral, level, matching and leadership rewards', roles: ['member'], icon: <Icon path="M4 15V8M8 15V5M12 15v-4M16 15V9" /> },
-  { id: 'team', label: 'Team', hint: 'Your downline, level by level and leg by leg', roles: ['member'], icon: <Icon path="M7 9a2.2 2.2 0 1 0 0-4.4A2.2 2.2 0 0 0 7 9m6 0a2.2 2.2 0 1 0 0-4.4A2.2 2.2 0 0 0 13 9M3 16c0-2.2 1.8-3.6 4-3.6s4 1.4 4 3.6m2 0c0-2.2 1.4-3.6 3-3.6" /> },
-  { id: 'rank', label: 'Rank', hint: 'Qualification, caps and the leadership pool', roles: ['member'], icon: <Icon path="M10 3.5 12 8l4.6.5-3.4 3.1.9 4.6L10 14l-4.1 2.2.9-4.6L3.4 8.5 8 8z" /> },
-  { id: 'spin', label: 'Spin & Win', hint: 'Run the monthly draw. Admin only.', roles: ['admin'], icon: <Icon path="M10 3a7 7 0 1 1-7 7M10 3v7l5 3M10 3 8 1M3 10H1" /> },
-  { id: 'members', label: 'Members', hint: 'Provision IDs and passwords', roles: ['admin'], icon: <Icon path="M8 9a2.4 2.4 0 1 0 0-4.8A2.4 2.4 0 0 0 8 9m-5 8c0-2.6 2.2-4.2 5-4.2s5 1.6 5 4.2M14 7h4M16 5v4" /> },
-  { id: 'calculator', label: 'Projection', hint: 'What a real team shape actually pays', roles: ['member', 'admin'], icon: <Icon path="M6 3h8v14H6zM8 6h4M8 9h1.5M11 9h1.5M8 12h1.5M11 12h1.5" /> },
-  { id: 'rules', label: 'Plan rules', hint: 'How the engine reads the plan, and where it is ambiguous', roles: ['member', 'admin'], icon: <Icon path="M5 3h7l3 3v11H5zM12 3v3h3M8 10h4M8 13h4" /> },
+  {
+    id: 'overview',
+    group: 'Portfolio',
+    label: 'Overview',
+    hint: 'Everything at a glance',
+    roles: ['member'],
+    icon: <Icon path="M3 10.5 10 4l7 6.5V16a1 1 0 0 1-1 1h-3v-4H7v4H4a1 1 0 0 1-1-1z" />,
+  },
+  {
+    id: 'savings',
+    group: 'Portfolio',
+    label: 'Savings',
+    hint: 'Your 30-month ladder and the monthly spin results',
+    roles: ['member'],
+    icon: <Icon path="M4 6h12v9H4zM4 9h12M7 12h3" />,
+  },
+  {
+    id: 'income',
+    group: 'Earnings',
+    label: 'Income',
+    hint: 'Referral, level, matching and leadership rewards',
+    roles: ['member'],
+    icon: <Icon path="M4 15V8M8 15V5M12 15v-4M16 15V9" />,
+  },
+  {
+    id: 'team',
+    group: 'Earnings',
+    label: 'Team',
+    hint: 'Your downline, level by level and leg by leg',
+    roles: ['member'],
+    icon: (
+      <Icon path="M7 9a2.2 2.2 0 1 0 0-4.4A2.2 2.2 0 0 0 7 9m6 0a2.2 2.2 0 1 0 0-4.4A2.2 2.2 0 0 0 13 9M3 16c0-2.2 1.8-3.6 4-3.6s4 1.4 4 3.6m2 0c0-2.2 1.4-3.6 3-3.6" />
+    ),
+  },
+  {
+    id: 'rank',
+    group: 'Earnings',
+    label: 'Rank',
+    hint: 'Qualification, caps and the leadership pool',
+    roles: ['member'],
+    icon: <Icon path="M10 3.5 12 8l4.6.5-3.4 3.1.9 4.6L10 14l-4.1 2.2.9-4.6L3.4 8.5 8 8z" />,
+  },
+  {
+    id: 'spin',
+    group: 'Operations',
+    label: 'Spin & Win',
+    hint: 'Run the monthly draw. Admin only.',
+    roles: ['admin'],
+    icon: <Icon path="M10 3a7 7 0 1 1-7 7M10 3v7l5 3M10 3 8 1M3 10H1" />,
+  },
+  {
+    id: 'members',
+    group: 'Operations',
+    label: 'Members',
+    hint: 'Provision IDs and passwords',
+    roles: ['admin'],
+    icon: (
+      <Icon path="M8 9a2.4 2.4 0 1 0 0-4.8A2.4 2.4 0 0 0 8 9m-5 8c0-2.6 2.2-4.2 5-4.2s5 1.6 5 4.2M14 7h4M16 5v4" />
+    ),
+  },
+  {
+    id: 'calculator',
+    group: 'Reference',
+    label: 'Projection',
+    hint: 'What a real team shape actually pays',
+    roles: ['member', 'admin'],
+    icon: <Icon path="M6 3h8v14H6zM8 6h4M8 9h1.5M11 9h1.5M8 12h1.5M11 12h1.5" />,
+  },
+  {
+    id: 'rules',
+    group: 'Reference',
+    label: 'Plan rules',
+    hint: 'How the engine reads the plan, and where it is ambiguous',
+    roles: ['member', 'admin'],
+    icon: <Icon path="M5 3h7l3 3v11H5zM12 3v3h3M8 10h4M8 13h4" />,
+  },
 ];
 
 export default function App() {
@@ -94,6 +162,7 @@ function Dashboard() {
       active={route}
       onNavigate={navigate}
       onSignOut={signOut}
+      aside={user.role === 'member' ? <SidebarSummary account={data} /> : null}
       user={{
         name: user.name,
         id: user.id,

@@ -105,11 +105,7 @@ export function StackedIncomeChart({ data }: { data: readonly IncomeMonth[] }) {
                 return (
                   <path
                     key={series.key}
-                    d={
-                      isTop
-                        ? barPath(x, top, barWidth, height, 4)
-                        : barPath(x, top, barWidth, height, 0)
-                    }
+                    d={isTop ? barPath(x, top, barWidth, height, 4) : barPath(x, top, barWidth, height, 0)}
                     fill={series.color}
                   />
                 );
@@ -128,11 +124,7 @@ export function StackedIncomeChart({ data }: { data: readonly IncomeMonth[] }) {
       </svg>
 
       {active ? (
-        <ChartTooltip
-          x={MARGIN.left + (hovered! + 0.5) * bandWidth}
-          y={HEIGHT / 2}
-          width={width}
-        >
+        <ChartTooltip x={MARGIN.left + (hovered! + 0.5) * bandWidth} y={HEIGHT / 2} width={width}>
           <p className="mb-1 text-[12px] font-semibold text-ink">
             {new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(active.date)}
           </p>

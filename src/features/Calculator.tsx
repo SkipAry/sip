@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Card, CardBody, CardHeader, DataTable, Notice, Stat, Td } from '@/components/ui';
+import { Card, CardBody, CardHeader, DataTable, Money, Notice, Stat, Td } from '@/components/ui';
 import { BarList } from '@/components/charts/BarList';
 import { projectTeam, statedProjection, PROJECTION_STATED, MATCHING } from '@/lib/plan';
 import { count, money, percent } from '@/lib/format';
@@ -28,9 +28,9 @@ export function Calculator() {
   return (
     <div className="space-y-5">
       <Notice tone="caution" title="The printed illustration is a ceiling, not a forecast">
-        Reaching {money(PROJECTION_STATED.monthlyIncome)} a month needs an 11,110-member team in which every single
-        member sponsors ten actives across four levels and all of them keep depositing. Use the controls below to see
-        what a real team shape pays.
+        Reaching {money(PROJECTION_STATED.monthlyIncome)} a month needs an 11,110-member team in which every
+        single member sponsors ten actives across four levels and all of them keep depositing. Use the
+        controls below to see what a real team shape pays.
       </Notice>
 
       <Card>
@@ -76,17 +76,25 @@ export function Calculator() {
       </Card>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label="Team size" value={count(teamSize)} sub={`Across ${depth} level${depth === 1 ? '' : 's'}`} />
-        <Stat label="Level income" value={money(projection.teamIncome)} sub="Paid on the team's monthly deposits" />
+        <Stat
+          label="Team size"
+          value={count(teamSize)}
+          sub={`Across ${depth} level${depth === 1 ? '' : 's'}`}
+        />
+        <Stat
+          label="Level income"
+          value={<Money amount={projection.teamIncome} size="lg" />}
+          sub="Paid on the team's monthly deposits"
+        />
         <Stat
           label="Binary income"
-          value={money(projection.binaryIncome)}
+          value={<Money amount={projection.binaryIncome} size="lg" />}
           sub={`${count(projection.binaryPairs)} pairs at ${money(MATCHING.payoutPerPair)}`}
         />
         <Stat
           label="Monthly total"
-          value={money(projection.monthlyIncome)}
-          tone="gold"
+          value={<Money amount={projection.monthlyIncome} size="lg" tone="gold" />}
+          accent
           sub={`${percent(share, 1)} of the printed illustration`}
         />
       </div>

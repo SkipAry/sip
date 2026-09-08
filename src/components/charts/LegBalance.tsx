@@ -34,8 +34,24 @@ export function LegBalance({
   const scale = (value: number) => (value / max) * half;
 
   const legs = [
-    { side: 'Left leg', total: left, matched: matchedLeft, labelY: 14, barY: 22, color: 'rgb(var(--s1))', dir: -1 },
-    { side: 'Right leg', total: right, matched: matchedRight, labelY: 68, barY: 76, color: 'rgb(var(--s3))', dir: 1 },
+    {
+      side: 'Left leg',
+      total: left,
+      matched: matchedLeft,
+      labelY: 14,
+      barY: 22,
+      color: 'rgb(var(--s1))',
+      dir: -1,
+    },
+    {
+      side: 'Right leg',
+      total: right,
+      matched: matchedRight,
+      labelY: 68,
+      barY: 76,
+      color: 'rgb(var(--s3))',
+      dir: 1,
+    },
   ] as const;
 
   return (
@@ -67,9 +83,24 @@ export function LegBalance({
               </text>
 
               {/* Total volume, pale. */}
-              <rect x={start} y={leg.barY} width={total} height={BAR_HEIGHT} rx={4} fill={leg.color} opacity={0.22} />
+              <rect
+                x={start}
+                y={leg.barY}
+                width={total}
+                height={BAR_HEIGHT}
+                rx={4}
+                fill={leg.color}
+                opacity={0.22}
+              />
               {/* Volume that actually matched, solid. */}
-              <rect x={matchedStart} y={leg.barY} width={matched} height={BAR_HEIGHT} rx={4} fill={leg.color} />
+              <rect
+                x={matchedStart}
+                y={leg.barY}
+                width={matched}
+                height={BAR_HEIGHT}
+                rx={4}
+                fill={leg.color}
+              />
 
               <text
                 x={centre + leg.dir * (total + 10)}

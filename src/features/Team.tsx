@@ -1,5 +1,15 @@
 import { useMemo, useState } from 'react';
-import { Badge, Card, CardBody, CardHeader, DataTable, SegmentedControl, Stat, Td } from '@/components/ui';
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  DataTable,
+  ScrollPanel,
+  SegmentedControl,
+  Stat,
+  Td,
+} from '@/components/ui';
 import { BarList } from '@/components/charts/BarList';
 import { LegBalance } from '@/components/charts/LegBalance';
 import type { Account, Leg, TeamMember } from '@/data/generate';
@@ -38,7 +48,11 @@ export function Team({ account }: { account: Account }) {
   return (
     <div className="space-y-5">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label="Total team" value={count(account.standing.teamSize)} sub={`Across ${byLevel.length} levels`} />
+        <Stat
+          label="Total team"
+          value={count(account.standing.teamSize)}
+          sub={`Across ${byLevel.length} levels`}
+        />
         <Stat
           label="Active this month"
           value={count(account.standing.activeMembers)}
@@ -58,7 +72,10 @@ export function Team({ account }: { account: Account }) {
 
       <div className="grid items-start gap-5 lg:grid-cols-[1fr_1.1fr]">
         <Card>
-          <CardHeader title="Binary legs" hint="Solid shows volume that matched; the pale overhang is unmatched." />
+          <CardHeader
+            title="Binary legs"
+            hint="Solid shows volume that matched; the pale overhang is unmatched."
+          />
           <CardBody>
             <LegBalance
               left={account.legs.left.volume}
@@ -93,8 +110,8 @@ export function Team({ account }: { account: Account }) {
             <p className="mt-3 text-[13px] leading-relaxed text-muted">
               {count(account.income.matching.pairs)} pairs matched this month for{' '}
               {money(account.income.matching.payable)}. The stronger leg is carrying{' '}
-              {count(Math.max(account.income.matching.carryLeft, account.income.matching.carryRight))} BV that has
-              nothing to pair with.
+              {count(Math.max(account.income.matching.carryLeft, account.income.matching.carryRight))} BV that
+              has nothing to pair with.
             </p>
           </CardBody>
         </Card>
@@ -160,8 +177,9 @@ export function Team({ account }: { account: Account }) {
           }
         />
         <CardBody className="px-0 py-0">
-          <div className="max-h-[520px] overflow-y-auto px-3 py-2">
+          <ScrollPanel maxHeight={520} className="px-3 py-2">
             <DataTable
+              stickyHeader
               caption="Team roster"
               columns={[
                 { key: 'name', label: 'Member' },
@@ -176,7 +194,7 @@ export function Team({ account }: { account: Account }) {
                 <TeamRow key={member.id} member={member} />
               ))}
             </DataTable>
-          </div>
+          </ScrollPanel>
           {filtered.length > 200 ? (
             <p className="border-t border-line px-5 py-3 text-[12px] text-faint">
               Showing the first 200 of {count(filtered.length)} matching members.

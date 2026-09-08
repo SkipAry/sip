@@ -99,8 +99,6 @@ describe('demo dataset', () => {
   it('keeps the ledger and position in step', () => {
     expect(account.ledger).toHaveLength(30);
     expect(account.position.monthsPaid).toBe(22);
-    expect(account.position.paid + account.position.outstanding).toBe(
-      30 * 5_000 * 100,
-    );
+    expect(account.position.paid + account.position.outstanding).toBe(30 * 5_000 * 100);
   });
 });

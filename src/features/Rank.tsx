@@ -1,4 +1,15 @@
-import { Badge, Card, CardBody, CardHeader, DataTable, Meter, Notice, Stat, Td } from '@/components/ui';
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  DataTable,
+  Meter,
+  Money,
+  Notice,
+  Stat,
+  Td,
+} from '@/components/ui';
 import { BarList } from '@/components/charts/BarList';
 import type { Account } from '@/data/generate';
 import { evaluateAllRanks, RANKS } from '@/lib/plan';
@@ -15,12 +26,12 @@ export function Rank({ account }: { account: Account }) {
         <Stat
           label="Rank held"
           value={held?.label ?? 'None yet'}
-          tone={held ? 'gold' : undefined}
+          accent={Boolean(held ? 'gold' : undefined)}
           sub={held ? `Tier ${held.tier} of ${RANKS.length}` : 'Ten directs unlock the first rank'}
         />
         <Stat
           label="Daily matching cap"
-          value={held?.dailyMatchingCap !== null && held ? money(held.dailyMatchingCap!) : '—'}
+          value={held?.dailyMatchingCap != null ? <Money amount={held.dailyMatchingCap} size="lg" /> : '—'}
           sub={
             account.income.matching.capIsFallback
               ? 'Inherited from the next lower rank; the plan omits this one'
@@ -29,13 +40,15 @@ export function Rank({ account }: { account: Account }) {
         />
         <Stat
           label="Leadership pool"
-          value={money(leadership.pool)}
+          value={<Money amount={leadership.pool} size="lg" />}
           sub={`${count(leadership.contributors)} contributions of ${money(10_000)} this month`}
         />
         <Stat
           label="Your pool share"
-          value={money(account.income.leadership.earned)}
-          sub={held ? `${bpsLabel(held.leadershipPoolShare)} slice, split between its qualifiers` : 'Rank first'}
+          value={<Money amount={account.income.leadership.earned} size="lg" tone="gold" />}
+          sub={
+            held ? `${bpsLabel(held.leadershipPoolShare)} slice, split between its qualifiers` : 'Rank first'
+          }
         />
       </div>
 
@@ -50,9 +63,7 @@ export function Rank({ account }: { account: Account }) {
             return (
               <div
                 key={entry.rank.id}
-                className={`rounded-card border p-4 ${
-                  isHeld ? 'border-gold/40 bg-gold/5' : 'border-line'
-                }`}
+                className={`rounded-card border p-4 ${isHeld ? 'border-gold/40 bg-gold/5' : 'border-line'}`}
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
@@ -150,8 +161,8 @@ export function Rank({ account }: { account: Account }) {
               }))}
             />
             <Notice tone="caution" title="Ruby Leader has no stated cap">
-              The plan lists caps for Associate, Silver, Gold, Diamond and Crown. A Ruby Leader inherits the Gold cap
-              here until the company decides one.
+              The plan lists caps for Associate, Silver, Gold, Diamond and Crown. A Ruby Leader inherits the
+              Gold cap here until the company decides one.
             </Notice>
           </CardBody>
         </Card>

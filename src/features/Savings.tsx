@@ -1,5 +1,18 @@
 import { useState } from 'react';
-import { Badge, Card, CardBody, CardHeader, DataTable, Meter, Notice, SegmentedControl, Stat, Td } from '@/components/ui';
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  DataTable,
+  Meter,
+  Money,
+  Notice,
+  ScrollPanel,
+  SegmentedControl,
+  Stat,
+  Td,
+} from '@/components/ui';
 import { LadderChart } from '@/components/charts/LadderChart';
 import type { Account } from '@/data/generate';
 import { buildBenefitChart, SAVINGS, type InstalmentStatus } from '@/lib/plan';
@@ -38,28 +51,32 @@ export function Savings({ account }: { account: Account }) {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat
           label="Paid to date"
-          value={money(position.paid)}
+          value={<Money amount={position.paid} size="lg" />}
           sub={`${position.monthsPaid} instalments of ${money(SAVINGS.monthlyDeposit)}`}
           footer={<Meter value={position.progress} label="Term progress" />}
         />
-        <Stat label="Still to pay" value={money(position.outstanding)} sub={`${position.monthsRemaining} months left`} />
+        <Stat
+          label="Still to pay"
+          value={<Money amount={position.outstanding} size="lg" />}
+          sub={`${position.monthsRemaining} months left`}
+        />
         <Stat
           label="Gold at maturity"
-          value={money(SAVINGS.maturityValue)}
-          tone="gold"
+          value={<Money amount={SAVINGS.maturityValue} size="lg" tone="gold" animate />}
+          accent
           sub={`Paid in month ${SAVINGS.maturityMonth}, on ${dateLabel(position.maturityDate)}`}
         />
         <Stat
           label="If the spin lands now"
-          value={money(currentRow.benefit)}
+          value={<Money amount={currentRow.benefit} size="lg" />}
           sub={`${money(currentRow.upside)} above everything you have deposited, and the deposits stop`}
         />
       </div>
 
       <Notice tone="info" title="How the two outcomes differ">
-        Winning the spin ends the plan early: you take that month’s gold and stop paying. Holding to the end pays{' '}
-        {money(SAVINGS.maturityValue)} in month {SAVINGS.maturityMonth} after all{' '}
-        {SAVINGS.termMonths} instalments. The document states that between {SAVINGS.maturityCohort.min} and{' '}
+        Winning the spin ends the plan early: you take that month’s gold and stop paying. Holding to the end
+        pays {money(SAVINGS.maturityValue)} in month {SAVINGS.maturityMonth} after all {SAVINGS.termMonths}{' '}
+        instalments. The document states that between {SAVINGS.maturityCohort.min} and{' '}
         {SAVINGS.maturityCohort.max} people receive the maturity amount.
       </Notice>
 
@@ -111,8 +128,9 @@ export function Savings({ account }: { account: Account }) {
         <Card>
           <CardHeader title="Your instalments" hint="Every month of the term, and where each one stands." />
           <CardBody className="px-0 py-0">
-            <div className="max-h-[420px] overflow-y-auto">
+            <ScrollPanel maxHeight={420}>
               <DataTable
+                stickyHeader
                 caption="Instalment ledger"
                 columns={[
                   { key: 'month', label: 'Month' },
@@ -133,7 +151,7 @@ export function Savings({ account }: { account: Account }) {
                   </tr>
                 ))}
               </DataTable>
-            </div>
+            </ScrollPanel>
           </CardBody>
         </Card>
 
@@ -150,8 +168,9 @@ export function Savings({ account }: { account: Account }) {
             }
           />
           <CardBody className="px-0 py-0">
-            <div className="max-h-[420px] overflow-y-auto px-2">
+            <ScrollPanel maxHeight={420} className="px-2">
               <DataTable
+                stickyHeader
                 caption="Monthly lucky spin draws"
                 columns={[
                   { key: 'month', label: 'Draw' },
@@ -166,18 +185,16 @@ export function Savings({ account }: { account: Account }) {
                     </Td>
                     <Td>
                       <span className="text-ink">{draw.winnerName}</span>
-                      <span className="tnum ml-2 text-[11px] text-faint">
-                        1 in {count(draw.poolSize)}
-                      </span>
+                      <span className="tnum ml-2 text-[11px] text-faint">1 in {count(draw.poolSize)}</span>
                     </Td>
                     <Td align="right">{money(draw.benefit)}</Td>
                   </tr>
                 ))}
               </DataTable>
-            </div>
+            </ScrollPanel>
             <div className="border-t border-line px-5 py-4 text-[13px] leading-relaxed text-muted">
-              Your number has not come up yet. Across the {SAVINGS.termMonths - account.position.monthsPaid} draws
-              left in your term the chance of winning at least once is{' '}
+              Your number has not come up yet. Across the {SAVINGS.termMonths - account.position.monthsPaid}{' '}
+              draws left in your term the chance of winning at least once is{' '}
               <strong className="tnum text-ink">{percent(account.spinChance.remainingTerm, 1)}</strong>.
             </div>
           </CardBody>

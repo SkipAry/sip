@@ -36,13 +36,21 @@ export function PlanRules() {
   return (
     <div className="space-y-5">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label="Rules checked" value={count(findings.length)} sub="Every figure recomputed from the document" />
+        <Stat
+          label="Rules checked"
+          value={count(findings.length)}
+          sub="Every figure recomputed from the document"
+        />
         <Stat label="Reconcile cleanly" value={count(summary.ok)} sub="Stated and computed values agree" />
-        <Stat label="Interpreted" value={count(summary.info)} sub="Readable, but the engine had to choose a reading" />
+        <Stat
+          label="Interpreted"
+          value={count(summary.info)}
+          sub="Readable, but the engine had to choose a reading"
+        />
         <Stat
           label="Need a decision"
           value={count(summary.warning)}
-          tone={summary.warning > 0 ? 'gold' : undefined}
+          accent={Boolean(summary.warning > 0 ? 'gold' : undefined)}
           sub="A gap or contradiction the company should resolve"
         />
       </div>
@@ -86,10 +94,16 @@ export function PlanRules() {
                 <Row label="Term" value={`${SAVINGS.termMonths} months`} />
                 <Row label="Total deposited" value={money(SAVINGS.statedTotalDeposit)} />
                 <Row label="Commissionable share" value="20% of each deposit" />
-                <Row label="Commissionable value" value={`${money(COMMISSIONABLE_BASE)} per member per month`} />
+                <Row
+                  label="Commissionable value"
+                  value={`${money(COMMISSIONABLE_BASE)} per member per month`}
+                />
                 <Row label="First-month spin benefit" value={money(SAVINGS.firstMonthBenefit)} />
                 <Row label="Benefit step per month" value={money(SAVINGS.benefitStep)} />
-                <Row label="Maturity" value={`${money(SAVINGS.maturityValue)} in month ${SAVINGS.maturityMonth}`} />
+                <Row
+                  label="Maturity"
+                  value={`${money(SAVINGS.maturityValue)} in month ${SAVINGS.maturityMonth}`}
+                />
                 <Row label="Matched pair" value={money(MATCHING.payoutPerPair)} />
                 <Row
                   label="Binary ratio"
@@ -123,12 +137,11 @@ export function PlanRules() {
                 ))}
                 <tr className="border-t-2 border-line font-semibold">
                   <Td>Total</Td>
-                  <Td align="right">
-                    {bpsLabel(LEVEL_TIERS.reduce((total, tier) => total + tier.rate, 0))}
-                  </Td>
+                  <Td align="right">{bpsLabel(LEVEL_TIERS.reduce((total, tier) => total + tier.rate, 0))}</Td>
                   <Td align="right">
                     {money(
-                      (COMMISSIONABLE_BASE * LEVEL_TIERS.reduce((total, tier) => total + tier.rate, 0)) / 10_000,
+                      (COMMISSIONABLE_BASE * LEVEL_TIERS.reduce((total, tier) => total + tier.rate, 0)) /
+                        10_000,
                     )}
                   </Td>
                   <Td align="right">—</Td>
@@ -140,7 +153,10 @@ export function PlanRules() {
       </div>
 
       <Card>
-        <CardHeader title="Rank requirements" hint="Transcribed from the qualification table, with gaps marked." />
+        <CardHeader
+          title="Rank requirements"
+          hint="Transcribed from the qualification table, with gaps marked."
+        />
         <CardBody className="px-0 py-0">
           <div className="px-3 py-2">
             <DataTable

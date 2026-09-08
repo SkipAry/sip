@@ -146,8 +146,7 @@ export function findAccount(id: string): Account | null {
 }
 
 export type SignInResult =
-  | { ok: true; account: Account }
-  | { ok: false; reason: 'unknown' | 'password' | 'suspended' };
+  { ok: true; account: Account } | { ok: false; reason: 'unknown' | 'password' | 'suspended' };
 
 export async function signIn(id: string, password: string): Promise<SignInResult> {
   const account = findAccount(id);
