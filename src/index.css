@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --c-canvas: 246 245 242;
+    --c-surface: 255 255 255;
+    --c-raised: 250 249 246;
+    --c-line: 226 223 216;
+    --c-ink: 22 24 28;
+    --c-muted: 92 97 105;
+    --c-faint: 138 143 152;
+
+    --c-gold: 166 124 18;
+    --c-gold-soft: 227 179 65;
+    --c-gold-deep: 118 86 8;
+
+    --c-positive: 22 122 84;
+    --c-caution: 178 116 12;
+    --c-critical: 186 51 45;
+    --c-info: 40 92 176;
+
+    /*
+     * Categorical series slots, assigned to an entity in fixed order and never
+     * cycled. Validated all-pairs against this surface: worst CVD deltaE 9.7,
+     * worst normal-vision deltaE 19.7, every slot at or above 3:1 contrast.
+     * #2a78d6 blue / #eb6834 orange / #17a473 aqua / #a24f8f magenta
+     */
+    --s1: 42 120 214;
+    --s2: 235 104 52;
+    --s3: 23 164 115;
+    --s4: 162 79 143;
+    /* Not a categorical slot — reserved for "other" and inactive marks. */
+    --s-other: 138 143 152;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --c-canvas: 11 12 14;
+    --c-surface: 22 24 28;
+    --c-raised: 30 33 38;
+    --c-line: 48 52 59;
+    --c-ink: 240 240 238;
+    --c-muted: 163 167 174;
+    --c-faint: 121 126 134;
+
+    --c-gold: 227 179 65;
+    --c-gold-soft: 245 214 123;
+    --c-gold-deep: 176 132 34;
+
+    --c-positive: 71 186 133;
+    --c-caution: 226 172 63;
+    --c-critical: 235 106 99;
+    --c-info: 110 162 240;
+
+    /*
+     * The same four hues re-stepped for the dark surface, not an automatic
+     * flip. Validated all-pairs: worst CVD deltaE 8.2, normal-vision 17.4.
+     * #3987e5 blue / #d95926 orange / #199e70 aqua / #b661a8 magenta
+     */
+    --s1: 57 135 229;
+    --s2: 217 89 38;
+    --s3: 25 158 112;
+    --s4: 182 97 168;
+    --s-other: 121 126 134;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-canvas text-ink antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'tnum' 0;
+  }
+
+  /* Tabular numerals wherever figures are compared column-wise. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background: rgb(var(--c-gold) / 0.24);
+  }
+
+  *:focus-visible {
+    outline: 2px solid rgb(var(--c-gold));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-card border border-line bg-surface shadow-card;
+  }
+
+  .scroll-x {
+    @apply overflow-x-auto;
+    scrollbar-width: thin;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
